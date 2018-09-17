@@ -3,7 +3,7 @@
 	  var initvurs;
 	  var training_input = [];
 	  var training_output = [];
-    import brain from 'brain.js';
+    import brain from 'brain.js-master';
     // Cleanup function when the extension is unloaded
     ext._shutdown = function() {};
 
