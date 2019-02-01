@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Krunker Editor</title>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-69264675-5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-69264675-5');
+    </script>
+    <link rel='shortcut icon' type="image/png" href="./img/favicon.png"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+
+            font-family: "Lucida Grande", sans-serif;
+        }
+
+        #container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        #infoContainer {
+            position: absolute;
+            left: 15px;
+            bottom: 40px;
+            box-sizing: border-box;
+            padding: 0 8px;
+            line-height: 27px;
+            background: lightgrey;
+        }
+
+        #bottomBar {
+            position: absolute;
+            left: 15px;
+            bottom: -3px; /* For the spacing issue between elements */
+        }
+
+        .bottomPanel {
+            display: inline-block;
+            margin-right: 2px;
+            color: white;
+            overflow: hidden;
+        }
+
+        .bottomButton {
+            position: relative;
+            display: inline-block;
+            box-sizing: border-box;
+            padding: 0 8px;
+            border-left: 1px solid #2c2c2c;
+            cursor: pointer;
+            font-size: 11px;
+            line-height: 27px;
+            background: #1a1a1a;
+            border-bottom: 3px solid transparent;
+        }
+
+        .bottomButton:hover {
+            background: #111;
+        }
+
+        .bottomButton.selected {
+            border-bottom-color: red;
+        }
+
+        .bottomButton .bottomDetails {
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .bottomButton .bottomDetails:last-child {
+            margin-right: 0;
+        }
+
+        .bottomButton input {
+            text-align: center;
+            background: #303030;
+            outline: none;
+            border: 0;
+        }
+
+        .bottomButton input:hover {
+            background: #3c3c3c;
+        }
+
+        .bottomButton input[type=text] {
+            color: #1ed36f;
+        }
+
+        .bottomButton input[type=number] {
+            color: #2fa1d6;
+            padding-right: 2px;
+        }
+
+        .bottomButton input[type=number]::-webkit-inner-spin-button,
+        .bottomButton input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        #help {
+            visibility: hidden;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 999;
+        }
+
+        #help.visible {
+            visibility: visible;
+        }
+
+        #helpPanel {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 600px;
+            transform: translate(-50%, -50%);
+            padding: 0 32px;
+            background: #111;
+            color: white;
+        }
+
+        .blocker {
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        #testButton {
+            z-index: 2000;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 5px;
+            padding-left: 10px;
+            padding-right: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #fff;
+            background: #1a1a1a;
+        }
+        #testButton:hover {
+            background: #111;
+        }
+
+		#advancedGUI {
+			position: absolute; 
+			top: 2px; 
+			left: 2px;
+		}
+
+    </style>
+    <script data-cfasync="false" type="text/javascript">
+          var freestar = freestar || {};
+          freestar.hitTime = Date.now();
+          freestar.queue = freestar.queue || [];
+          freestar.config = freestar.config || {};
+          freestar.debug = window.location.search.indexOf('fsdebug') === -1 ? false : true;
+          freestar.config.enabled_slots = [
+            "krunkerio_320x100_1"
+          ];
+          !function(a,b){var c=b.getElementsByTagName("script")[0],d=b.createElement("script"),e="https://a.pub.network/krunker-io";e+=freestar.debug?"/qa/pubfig.min.js":"/pubfig.min.js",d.async=!0,d.src=e,c.parentNode.insertBefore(d,c)}(window,document);
+    </script>
+</head>
+<body oncontextmenu="return false;">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- AD DISPLAY -->
+    <!-- <div style="z-index:10000;position:absolute;top:20px;left:20px">
+        <a style='font-size:25px' href="https://github.com/Tehchy/Krunker.io-Map-Editor-Mod">
+            Advanced Editor <i class="material-icons" style='font-size:30px;vertical-align:bottom'>format_paint</i>
+        </a>
+    </div> -->
+
+    <!-- TEST BUTTON -->
+    <div id="testButton" class="bottomButton" onclick="testMap()">Test Map</div>
+
+    <!-- CONTAINER -->
+    <div id="container"></div>
+
+    <!-- INFO CONTAINER -->
+    <div id="infoContainer">Object Count: <span id="objectCount">0</span></div>
+
+    <!-- BOTTOM BAR -->
+    <div id="bottomBar">
+
+        <!-- TRANSFORM TYPE -->
+        <div class="bottomPanel">
+            <div id="translateOption" class="bottomButton">Translate</div><div id="rotateOption" class="bottomButton">Rotate</div><div id="scaleOption" class="bottomButton">Scale</div>
+        </div>
+
+        <!-- TRANSFORM SPACE -->
+        <div class="bottomPanel">
+            <div id="worldSpaceOption" class="bottomButton">World</div><div id="localSpaceOption" class="bottomButton">Local</div>
+        </div>
+
+        <!-- OBJECT ACTIONS -->
+        <div class="bottomPanel">
+            <div id="deleteObject" class="bottomButton">Delete Object</div><div id="duplicateObject" class="bottomButton">Duplicate Object</div>
+        </div>
+
+        <!-- MAP ACTIONS -->
+        <div class="bottomPanel">
+            <div id="importMap" class="bottomButton">Import Map</div><div id="exportMap" class="bottomButton">Export Map</div><div id="newMap" class="bottomButton">New Map</div>
+        </div>
+
+        <!-- HELP -->
+        <div class="bottomPanel">
+            <div class="bottomButton" onclick="help.classList.toggle('visible')">Help</div>
+        </div>
+        
+    </div>
+    <div id="help">
+        <div class="blocker" onclick="help.classList.remove('visible')"></div>
+        <div id="helpPanel">
+            <h1>Help</h1>
+
+            <h2>Keyboard Shortcuts</h2>
+            <p><b>w/up</b> = fly forward</p>
+            <p><b>s/back</b> = fly backward</p>
+            <p><b>a/left</b> = fly left</p>
+            <p><b>d/right</b> = fly right</p>
+            <p><b>q</b> = fly down</p>
+            <p><b>e</b> = fly up</p>
+            <p><b>shift</b> = hold to fly faster</p>
+            <hr>
+            <p><b>1</b> = translate</p>
+            <p><b>2</b> = rotate</p>
+            <p><b>3</b> = scale</p>
+            <hr>
+            <p><b>delete/backspace</b> = delete element</p>
+            <p><b>`</b> = toggle world/local space</p>
+            <p><b>control</b> = hold to toggle snapping</p>
+            <hr>
+			<p><b>p</b> = create placeholder</p>
+			<p><b>shift f</b> = hitbox fixer</p>
+			<p><b>shift alt g</b> = remove all groups</p>
+			<p><b>shift g</b> = create group / remove group if exist</p>
+			<p><b>shift r</b> = duplicate group/object</p>
+			<p><b>ctrl c</b> = copy group</p>
+			<p><b>ctrl v</b> = paste group</p>
+        </div>
+    </div>
+
+    <!-- LOAD EDITOR SCRIPT -->
+    <script>
+        window.onbeforeunload = function() {
+            return 'You have unsaved changes!';
+        }
+    </script>
+    <script src="libs/dat.gui.min.js"></script>
+    <script src="js/editor.js"></script>
+
+</body>
+</html>
